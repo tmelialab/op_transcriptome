@@ -30,7 +30,7 @@ script/
   merge_genes_v1.py           merge quant.genes.sf (gene-level)
   PRJNA778743.md5             checksums for PRJNA778743 refetch
   PRJNA778743.urls.txt        URLs for PRJNA778743 refetch
-  orig_dosen/                 unmodified originals (historical reference only)
+  originals/                  unmodified originals (historical reference only)
 ```
 
 ## Requirements

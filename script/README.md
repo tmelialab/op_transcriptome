@@ -46,7 +46,7 @@ so they work for any username with the documented layout.
 | `list_sample.txt` | 407 samples, 4 tab-separated columns, no header. `#`/blank lines skipped. Tabs required; trailing newline on every line required. |
 | `PRJNA778743.urls.txt` / `PRJNA778743.md5` | Upstream URLs + checksums to (re)fetch the PRJNA778743 fastq set. |
 
-## `orig_dosen/`
+## `originals/`
 
 Unmodified originals (`mapx86.slurm`, `quant.sh`, `genome_index.pjsub`)
 from a different scheduler/site (different queues, `--mem` units, absolute
