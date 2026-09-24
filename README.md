@@ -128,21 +128,3 @@ of your jobs in the system (site submit limit is ~5, so pending
 `(AssocMaxJobsLimit)` is normal). Jobs that hit the walltime are simply
 re-queued by the next driver pass — check `logs/driver_submitted.txt`
 before submitting anything by hand to avoid duplicates.
-
-## Known gotchas
-
-- `SRR16912777` (PRJNA778743) is listed as paired but only the `_1`
-  file may be present: STAR then fails (exit 102). Fetch the matching
-  `_2` first — see `script/PRJNA778743.urls.txt` + `script/PRJNA778743.md5`.
-- `list_sample.txt` must use tabs (not spaces); every line must end with a
-  newline.
-- Salmon runs single-threaded per sample (`-p 8` inside chunk jobs);
-  chunk jobs request 8 CPUs / 48G (map) and 8 CPUs / 16G (quant).
-
-## Data availability
-
-Not stored in git (size / site-local): reference fasta/gtf, fastq,
-`star_index/`, `salmon/` indexes, `map/` BAMs, `quant/` outputs, merged
-matrices. What *is* versioned here: all scripts, the 407-sample list,
-and the PRJNA778743 fetch helpers. Full data available from the lab —
-contact the maintainer for access.
