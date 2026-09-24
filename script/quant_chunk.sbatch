@@ -11,12 +11,12 @@
 #SBATCH --output=logs/quant_chunk_%j.out
 #SBATCH --error=logs/quant_chunk_%j.err
 
-# Salmon quant per-CHUNK serial (fallback limit AssocMaxSubmitJobLimit).
+# Serial per-chunk salmon quant (fallback for AssocMaxSubmitJobLimit).
 # Usage: sbatch quant_chunk.sbatch START END
-# Idempoten: quant.sf yang sudah ada di-skip (aman resubmit).
+# Idempotent: existing quant.sf files are skipped (safe to resubmit).
 set -e
 
-START=${1:?isi START}; END=${2:?isi END}
+START=${1:?provide START}; END=${2:?provide END}
 
 source /mgpfs/apps/bioinformatics/apps/miniforge3/24.3.0-0/etc/profile.d/conda.sh
 conda activate training_qc
@@ -31,12 +31,12 @@ echo "chunk $START-$END | $(salmon --version 2>&1 | head -1) | start $(date)"
 
 for N in $(seq "$START" "$END"); do
   LINE=$(sed -n "${N}p" "$LIST")
-  if [[ -z "$LINE" || "$LINE" =~ ^# ]]; then echo "[$N] skip (kosong/komentar)"; continue; fi
+  if [[ -z "$LINE" || "$LINE" =~ ^# ]]; then echo "[$N] skip (empty/comment line)"; continue; fi
   IFS=$'\t' read -r PROJ SAMPLEID TYPE STRAND <<< "$LINE"
   echo "[$N] $PROJ $SAMPLEID $TYPE $STRAND"
 
   OUT="${QUANT_DIR}/${PROJ}/${SAMPLEID}"
-  if [[ -s "${OUT}/quant.sf" ]]; then echo "  quant.sf ada, skip"; continue; fi
+  if [[ -s "${OUT}/quant.sf" ]]; then echo "  quant.sf exists, skip"; continue; fi
 
   if [[ "$TYPE" == "single" ]]; then
     R1="${HOME_DIR}/rna/${PROJ}/${SAMPLEID}.fastq.gz"

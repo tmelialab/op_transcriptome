@@ -14,7 +14,7 @@ LIST_FILE = BASE / "list_sample.txt"
 
 def main():
     print("=" * 70)
-    print("  ANALISIS HASIL KUANTIFIKASI RNA-seq")
+    print("  RNA-seq QUANTIFICATION RESULTS ANALYSIS")
     print("=" * 70)
 
     # Load matrices
@@ -37,14 +37,14 @@ def main():
 
     # =========================================================================
     print("\n" + "=" * 70)
-    print("  STATISTIK DASAR GLOBAL")
+    print("  GLOBAL BASIC STATISTICS")
     print("=" * 70)
 
     # TPM stats
     all_tpm = tpm.values.flatten()
     all_tpm_nonzero = all_tpm[all_tpm > 0]
-    print(f"\n--- TPM (semua nilai) ---")
-    print(f"  Total nilai:     {len(all_tpm):,}")
+    print(f"\n--- TPM (all values) ---")
+    print(f"  Total values:     {len(all_tpm):,}")
     print(f"  Non-zero:        {len(all_tpm_nonzero):,} ({100*len(all_tpm_nonzero)/len(all_tpm):.1f}%)")
     print(f"  Mean:            {np.mean(all_tpm):.4f}")
     print(f"  Median:          {np.median(all_tpm):.4f}")
@@ -60,8 +60,8 @@ def main():
     # NumReads stats
     all_nr = numreads.values.flatten()
     all_nr_nonzero = all_nr[all_nr > 0]
-    print(f"\n--- NumReads (semua nilai) ---")
-    print(f"  Total nilai:     {len(all_nr):,}")
+    print(f"\n--- NumReads (all values) ---")
+    print(f"  Total values:     {len(all_nr):,}")
     print(f"  Non-zero:        {len(all_nr_nonzero):,} ({100*len(all_nr_nonzero)/len(all_nr):.1f}%)")
     print(f"  Mean:            {np.mean(all_nr):.2f}")
     print(f"  Median:          {np.median(all_nr):.2f}")
@@ -76,14 +76,14 @@ def main():
     genes_per_sample = (tpm > 0).sum(axis=0)
     tpm_sum_per_sample = tpm.sum(axis=0)
 
-    print(f"\n--- Gen diekspresikan (TPM > 0) per sampel ---")
+    print(f"\n--- Expressed genes (TPM > 0) per sample ---")
     print(f"  Mean:   {genes_per_sample.mean():.0f} genes")
     print(f"  Median: {genes_per_sample.median():.0f} genes")
     print(f"  Min:    {genes_per_sample.min()} genes (sample: {genes_per_sample.idxmin()})")
     print(f"  Max:    {genes_per_sample.max()} genes (sample: {genes_per_sample.idxmax()})")
     print(f"  Std:    {genes_per_sample.std():.0f}")
 
-    print(f"\n--- Total TPM per sampel ---")
+    print(f"\n--- Total TPM per sample ---")
     print(f"  Mean:   {tpm_sum_per_sample.mean():.1f}")
     print(f"  Median: {tpm_sum_per_sample.median():.1f}")
     print(f"  Min:    {tpm_sum_per_sample.min():.1f} (sample: {tpm_sum_per_sample.idxmin()})")
@@ -91,7 +91,7 @@ def main():
 
     # =========================================================================
     print("\n" + "=" * 70)
-    print("  TOP 20 TRANSCRIPT PALING TINGGI EKSPRESINYA (rata-rata TPM)")
+    print("  TOP 20 HIGHEST-EXPRESSED TRANSCRIPTS (mean TPM)")
     print("=" * 70)
 
     mean_tpm = tpm.mean(axis=1).sort_values(ascending=False)
@@ -104,7 +104,7 @@ def main():
 
     # =========================================================================
     print("\n" + "=" * 70)
-    print("  TOP 20 TRANSCRIPT PALING BANYAK READS (rata-rata NumReads)")
+    print("  TOP 20 TRANSCRIPTS BY READ COUNT (mean NumReads)")
     print("=" * 70)
 
     mean_nr = numreads.mean(axis=1).sort_values(ascending=False)
@@ -116,18 +116,18 @@ def main():
 
     # =========================================================================
     print("\n" + "=" * 70)
-    print("  KORELASI TPM vs NumReads (per sampel)")
+    print("  TPM vs NumReads CORRELATION (per sample)")
     print("=" * 70)
 
     tpm_sample_sum = tpm.sum(axis=0)
     nr_sample_sum = numreads.sum(axis=0)
     corr = tpm_sample_sum.corr(nr_sample_sum)
     print(f"\n  Pearson correlation (total TPM vs total NumReads): {corr:.4f}")
-    print(f"  (Seharusnya mendekati 1.0 karena TPM dinormalisasi dari NumReads)")
+    print(f"  (Should be close to 1.0 since TPM is normalized from NumReads)")
 
     # =========================================================================
     print("\n" + "=" * 70)
-    print("  RINGKASAN PER PRJNA/PROYEK")
+    print("  SUMMARY PER PROJECT")
     print("=" * 70)
 
     # Group by project
@@ -158,7 +158,7 @@ def main():
 
     # =========================================================================
     print("\n" + "=" * 70)
-    print("  DISTRIBUTION EKSPRESI (TPM bins)")
+    print("  EXPRESSION DISTRIBUTION (TPM bins)")
     print("=" * 70)
 
     bins = [-0.001, 0, 0.01, 0.1, 1, 5, 10, 50, 100, 500, 1000, float("inf")]
@@ -182,7 +182,7 @@ def main():
 
     # =========================================================================
     print("\n" + "=" * 70)
-    print("  SAMPEL OUTLIERS (jumlah gen aktif)")
+    print("  OUTLIER SAMPLES (active gene count)")
     print("=" * 70)
 
     mean_genes = genes_per_sample.mean()
@@ -198,26 +198,26 @@ def main():
     print(f"  Threshold high (> mean+2*std): {threshold_high:.0f}")
 
     if len(outliers_low) > 0:
-        print(f"\n  ⚠️  Outliers RENDAH ({len(outliers_low)} sampel):")
+        print(f"\n  ⚠️  LOW outliers ({len(outliers_low)} samples):")
         for srr, val in outliers_low.sort_values().items():
             proj = meta.get(srr, {}).get("proj", "?")
             print(f"    {srr} ({proj}): {val:.0f} genes")
     else:
-        print(f"\n  ✅ Tidak ada outlier rendah")
+        print(f"\n  ✅ No low outliers")
 
     if len(outliers_high) > 0:
-        print(f"\n  ⚠️  Outliers TINGGI ({len(outliers_high)} sampel):")
+        print(f"\n  ⚠️  HIGH outliers ({len(outliers_high)} samples):")
         for srr, val in outliers_high.sort_values(ascending=False).items():
             proj = meta.get(srr, {}).get("proj", "?")
             print(f"    {srr} ({proj}): {val:.0f} genes")
     else:
-        print(f"\n  ✅ Tidak ada outlier tinggi")
+        print(f"\n  ✅ No high outliers")
 
     # =========================================================================
     print("\n" + "=" * 70)
-    print("  SELESAI!")
+    print("  DONE!")
     print("=" * 70)
-    print(f"\nFile output di: {RESULTS}/")
+    print(f"\nOutput files in: {RESULTS}/")
     print(f"  tpm_matrix.tsv      ({os.path.getsize(RESULTS / 'tpm_matrix.tsv') / 1024 / 1024:.1f} MB)")
     print(f"  numreads_matrix.tsv ({os.path.getsize(RESULTS / 'numreads_matrix.tsv') / 1024 / 1024:.1f} MB)")
     print(f"  combined_matrix.tsv ({os.path.getsize(RESULTS / 'combined_matrix.tsv') / 1024 / 1024:.1f} MB)")

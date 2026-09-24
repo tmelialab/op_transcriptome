@@ -12,16 +12,16 @@
 #SBATCH --output=logs/map_%A_%a.out
 #SBATCH --error=logs/map_%A_%a.err
 
-# STAR mapping -> BRIN (adaptasi mapx86.slurm dari BU SCC, jadi job array per-sampel)
-# - serial 407 sampel tidak muat 24 jam -> 1 task = 1 sampel, maks 40 jalan bareng
-# - FIX vs original: baca 4 kolom (PROJ SAMPLEID TYPE STRAND); versi original baca 3 kolom
-#   sehingga TYPE="single\tunstranded" dan SEMUA sampel single-end salah masuk cabang paired
-# - FIX vs original: prefix & path BAM dibetulkan (original: "${OUT}Aligned..." tanpa slash
-#   + "-o /${OUT}..." jadi path absolut dari root)
-# - idempoten: BAM yang sudah ada di-skip (aman resubmit)
+# STAR mapping (adapted from originals/mapx86.slurm into a per-sample job array)
+# - 407 serial samples do not fit in 24 h -> 1 task = 1 sample, max 40 concurrent
+# - FIX vs original: parse 4 columns (PROJ SAMPLEID TYPE STRAND); the original parsed 3 columns,
+#   so TYPE became "single\tunstranded" and ALL single-end samples wrongly took the paired branch
+# - FIX vs original: BAM prefix & path corrected (original: "${OUT}Aligned..." missing a slash
+#   + "-o /${OUT}..." producing an absolute path from root)
+# - idempotent: existing BAMs are skipped (safe to resubmit)
 set -e
 
-: "${SLURM_ARRAY_TASK_ID:?harus jalan sebagai job array}"
+: "${SLURM_ARRAY_TASK_ID:?must run as a job array}"
 
 source /mgpfs/apps/bioinformatics/apps/miniforge3/24.3.0-0/etc/profile.d/conda.sh
 conda activate training_qc
@@ -36,7 +36,7 @@ LIST="$HOME/september/list_sample.txt"
 
 LINE=$(sed -n "${SLURM_ARRAY_TASK_ID}p" "$LIST")
 if [[ -z "$LINE" || "$LINE" =~ ^# ]]; then
-  echo "task ${SLURM_ARRAY_TASK_ID}: baris kosong/komentar, skip"
+  echo "task ${SLURM_ARRAY_TASK_ID}: empty/comment line, skip"
   exit 0
 fi
 
@@ -50,7 +50,7 @@ mkdir -p "$OUTDIR"
 cd "$OUTDIR"
 
 if [[ -s "$BAM" ]]; then
-  echo "BAM sudah ada, skip mapping: $BAM"
+  echo "BAM already exists, skip mapping: $BAM"
   exit 0
 fi
 

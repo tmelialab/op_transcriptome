@@ -27,13 +27,13 @@ echo "Starting: $(date)"
 
 cd "$SALDIR"
 
-# FIX: GTF NCBI menaruh transcript_id "" (kosong) di baris gene -> gffread >=0.12
-# abort "no valid ID". Strip atribut kosong tsb (teruji OK); exon/CDS/transcript utuh.
+# FIX: the NCBI GTF puts empty transcript_id "" on gene rows -> gffread >=0.12
+# aborts with "no valid ID". Strip those empty attributes (tested OK); exon/CDS/transcript rows stay intact.
 FIXED_GTF="$SALDIR/EG11.fixed.gtf"
 if [[ ! -s "$FIXED_GTF" ]]; then
-  # 1) strip transcript_id "" (gffread>=0.12 abort "no valid ID")
-  # 2) buang 1 baris strand "?" (rps12 kloroplas trans-splicing) -> gffread abort
-  #    "Error parsing strand"; STAR index asli tidak terpengaruh (sudah COMPLETED)
+  # 1) strip transcript_id "" (gffread>=0.12 aborts with "no valid ID")
+  # 2) drop the single "?"-strand row (trans-spliced chloroplast rps12) -> gffread aborts with
+  #    "Error parsing strand"; the STAR index itself is unaffected (built separately)
   sed 's/transcript_id ""; //g' "$GTF" | awk -F'\t' '/^#/ || $7 != "?"' > "$FIXED_GTF"
   echo "fixed GTF: $(du -h "$FIXED_GTF" | cut -f1)"
 fi

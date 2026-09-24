@@ -12,13 +12,13 @@
 #SBATCH --output=logs/quant_%A_%a.out
 #SBATCH --error=logs/quant_%A_%a.err
 
-# Salmon quantification -> BRIN (adaptasi quant.sh dari BU SCC, jadi job array per-sampel)
-# - FIX vs original: baca 4 kolom (PROJ SAMPLEID TYPE STRAND)
-# - libtype "-l A" (auto-detect, seperti original); kolom STRAND dokumentatif
-# - idempoten: quant.sf yang sudah ada di-skip (aman resubmit)
+# Salmon quantification (adapted from originals/quant.sh into a per-sample job array)
+# - FIX vs original: parse 4 columns (PROJ SAMPLEID TYPE STRAND)
+# - libtype "-l A" (auto-detect, as in the original); STRAND column is documentary
+# - idempotent: existing quant.sf files are skipped (safe to resubmit)
 set -e
 
-: "${SLURM_ARRAY_TASK_ID:?harus jalan sebagai job array}"
+: "${SLURM_ARRAY_TASK_ID:?must run as a job array}"
 
 source /mgpfs/apps/bioinformatics/apps/miniforge3/24.3.0-0/etc/profile.d/conda.sh
 conda activate training_qc
@@ -31,7 +31,7 @@ LIST="$HOME/september/list_sample.txt"
 
 LINE=$(sed -n "${SLURM_ARRAY_TASK_ID}p" "$LIST")
 if [[ -z "$LINE" || "$LINE" =~ ^# ]]; then
-  echo "task ${SLURM_ARRAY_TASK_ID}: baris kosong/komentar, skip"
+  echo "task ${SLURM_ARRAY_TASK_ID}: empty/comment line, skip"
   exit 0
 fi
 
@@ -40,7 +40,7 @@ echo "task ${SLURM_ARRAY_TASK_ID}: $PROJ $SAMPLEID $TYPE $STRAND (salmon $(salmo
 
 OUT="${QUANT_DIR}/${PROJ}/${SAMPLEID}"
 if [[ -s "${OUT}/quant.sf" ]]; then
-  echo "quant.sf sudah ada, skip: $OUT"
+  echo "quant.sf already exists, skip: $OUT"
   exit 0
 fi
 

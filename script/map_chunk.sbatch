@@ -11,12 +11,12 @@
 #SBATCH --output=logs/map_chunk_%j.out
 #SBATCH --error=logs/map_chunk_%j.err
 
-# STAR mapping per-CHUNK serial (fallback karena limit AssocMaxSubmitJobLimit:
-# array besar ditolak, 1 job chunk = 1 slot). Usage: sbatch map_chunk.sbatch START END
-# Idempoten: BAM yang sudah ada di-skip (aman resubmit).
+# Serial per-chunk STAR mapping (fallback for AssocMaxSubmitJobLimit:
+# large arrays are rejected, 1 chunk job = 1 slot). Usage: sbatch map_chunk.sbatch START END
+# Idempotent: existing BAMs are skipped (safe to resubmit).
 set -e
 
-START=${1:?isi START}; END=${2:?isi END}
+START=${1:?provide START}; END=${2:?provide END}
 
 source /mgpfs/apps/bioinformatics/apps/miniforge3/24.3.0-0/etc/profile.d/conda.sh
 conda activate training_qc
@@ -33,7 +33,7 @@ echo "chunk $START-$END | STAR $(STAR --version) | start $(date)"
 
 for N in $(seq "$START" "$END"); do
   LINE=$(sed -n "${N}p" "$LIST")
-  if [[ -z "$LINE" || "$LINE" =~ ^# ]]; then echo "[$N] skip (kosong/komentar)"; continue; fi
+  if [[ -z "$LINE" || "$LINE" =~ ^# ]]; then echo "[$N] skip (empty/comment line)"; continue; fi
   IFS=$'\t' read -r PROJ SAMPLEID TYPE STRAND <<< "$LINE"
   echo "[$N] $PROJ $SAMPLEID $TYPE $STRAND"
 
@@ -43,7 +43,7 @@ for N in $(seq "$START" "$END"); do
   mkdir -p "$OUTDIR"
   cd "$OUTDIR"
 
-  if [[ -s "$BAM" ]]; then echo "  BAM ada, skip"; continue; fi
+  if [[ -s "$BAM" ]]; then echo "  BAM exists, skip"; continue; fi
 
   if [[ "$TYPE" == "single" ]]; then
     R1="${HOME_DIR}/rna/${PROJ}/${SAMPLEID}.fastq.gz"
