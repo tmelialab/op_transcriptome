@@ -12,7 +12,7 @@
 #SBATCH --error=logs/star_index_%j.err
 
 # STAR genome index build for Elaeis guineensis EG11 (GCF_000442705.2)
-# Port of dosen's genome_index.pjsub (Fugaku/#PJM + spack) -> BRIN slurm + conda
+# Port of originals/genome_index.pjsub (Fugaku #PJM + spack) to Slurm + conda
 set -e
 
 source /mgpfs/apps/bioinformatics/apps/miniforge3/24.3.0-0/etc/profile.d/conda.sh

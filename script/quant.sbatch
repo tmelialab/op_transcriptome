@@ -13,8 +13,8 @@
 #SBATCH --error=logs/quant_%A_%a.err
 
 # Salmon quantification -> BRIN (adaptasi quant.sh dari BU SCC, jadi job array per-sampel)
-# - FIX vs dosen: baca 4 kolom (PROJ SAMPLEID TYPE STRAND)
-# - libtype "-l A" (auto-detect, seperti dosen); kolom STRAND dokumentatif
+# - FIX vs original: baca 4 kolom (PROJ SAMPLEID TYPE STRAND)
+# - libtype "-l A" (auto-detect, seperti original); kolom STRAND dokumentatif
 # - idempoten: quant.sf yang sudah ada di-skip (aman resubmit)
 set -e
 

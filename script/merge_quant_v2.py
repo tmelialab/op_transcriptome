@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Merge all quant.sf files into 2 matrices as requested by dosen:
+Merge all quant.sf files into 2 matrices:
   1. tpm_matrix.tsv:     transcript_id, Length, EffectiveLength, TPM per sample
   2. numreads_matrix.tsv: transcript_id, Length, EffectiveLength, NumReads per sample
 """

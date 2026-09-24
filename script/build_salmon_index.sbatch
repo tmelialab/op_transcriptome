@@ -11,7 +11,7 @@
 #SBATCH --output=logs/salmon_index_%j.out
 #SBATCH --error=logs/salmon_index_%j.err
 
-# Salmon index for Elaeis guineensis EG11 (GCF_000442705.2) - dosen step 2.1
+# Salmon index for Elaeis guineensis EG11 (GCF_000442705.2)
 set -e
 
 source /mgpfs/apps/bioinformatics/apps/miniforge3/24.3.0-0/etc/profile.d/conda.sh

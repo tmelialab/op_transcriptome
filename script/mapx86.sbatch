@@ -14,9 +14,9 @@
 
 # STAR mapping -> BRIN (adaptasi mapx86.slurm dari BU SCC, jadi job array per-sampel)
 # - serial 407 sampel tidak muat 24 jam -> 1 task = 1 sampel, maks 40 jalan bareng
-# - FIX vs dosen: baca 4 kolom (PROJ SAMPLEID TYPE STRAND); versi dosen baca 3 kolom
+# - FIX vs original: baca 4 kolom (PROJ SAMPLEID TYPE STRAND); versi original baca 3 kolom
 #   sehingga TYPE="single\tunstranded" dan SEMUA sampel single-end salah masuk cabang paired
-# - FIX vs dosen: prefix & path BAM dibetulkan (dosen: "${OUT}Aligned..." tanpa slash
+# - FIX vs original: prefix & path BAM dibetulkan (original: "${OUT}Aligned..." tanpa slash
 #   + "-o /${OUT}..." jadi path absolut dari root)
 # - idempoten: BAM yang sudah ada di-skip (aman resubmit)
 set -e
