@@ -1,0 +1,43 @@
+#!/bin/bash
+#PJM -L "node=7"               # Number of node
+#PJM -S                        # Direction of statistic information file output
+#PJM -L rscgrp=cd-portal # queue name for this ASEAN HPC project
+#PJM -g ra022310 # group name for ASEAN HPC project
+#PJM -L "elapse=12:00:00"         # Job run time limit value
+
+
+############################################################################
+# SETTING VARS
+############################################################################
+
+# Now let's keep track of some information just in case anything goes wrong
+start=$(date +%s%N)
+echo "=========================================================="
+echo "Starting on : ${start}"
+echo "Running on node : $(hostname)"
+echo "Current directory : $(pwd)"
+echo "=========================================================="
+
+. /vol0004/apps/oss/spack/share/spack/setup-env.sh
+spack load star
+export OMP_NUM_THREADS=6      # Environment variable setting
+
+# execute job
+STAR --runThreadN $OMP_NUM_THREADS \
+     --runMode genomeGenerate \
+     --genomeDir /home/ra022310/l00039/genome/EG5.1_STAR \
+     --genomeFastaFiles /home/ra022310/l00039/genome/EG5.1_linked.na \
+     --sjdbGTFfile  /home/ra022310/l00039/genome/EG5.1_Genes.V3.gtf
+
+
+echo "done running"
+echo "=========================================================="
+
+# print out some diagnostic stuff
+end=$(date +%s%N)
+duration=$(((end - start) / 1000000000))
+
+echo "Stop time is ${end}"
+echo "Duration: ${duration}"
+
+
